@@ -328,3 +328,96 @@ navigator.mediaDevices.addEventListener("devicechange", () => {
   karaokeBtn.disabled = micSelect.options.length === 0 || !micSelect.value;
   setStatus("Выберите микрофон и нажмите «Включить караоке»");
 })();
+
+// ---------- Обновление программы (GitHub Releases) ----------
+const updateBtn = document.getElementById("updateBtn");
+const updateLabel = document.getElementById("updateLabel");
+const updateStatus = document.getElementById("updateStatus");
+const appVersionEl = document.getElementById("appVersion");
+
+let updateAvailable = false;
+
+function setUpdateStatus(text, type = "") {
+  updateStatus.hidden = !text;
+  updateStatus.textContent = text || "";
+  updateStatus.className = "update-status" + (type ? ` ${type}` : "");
+}
+
+function formatMb(bytes) {
+  return (bytes / 1024 / 1024).toFixed(1);
+}
+
+async function checkUpdates(silent = false) {
+  if (!window.updater) return;
+  updateBtn.disabled = true;
+  updateLabel.textContent = "Проверка…";
+  if (!silent) setUpdateStatus("Проверяю обновления…");
+
+  const info = await window.updater.check();
+  updateBtn.disabled = false;
+
+  if (info.error) {
+    updateAvailable = false;
+    updateBtn.classList.remove("available");
+    updateLabel.textContent = "Обновить";
+    if (!silent) setUpdateStatus(`Не удалось проверить: ${info.error}`, "error");
+    return;
+  }
+
+  if (info.available) {
+    updateAvailable = true;
+    updateBtn.classList.add("available");
+    updateLabel.textContent = `Обновить до ${info.latest}`;
+    setUpdateStatus(`Доступна версия ${info.latest} (${formatMb(info.size)} МБ). Нажмите «Обновить».`, "ok");
+  } else {
+    updateAvailable = false;
+    updateBtn.classList.remove("available");
+    updateLabel.textContent = "Обновить";
+    if (!silent) setUpdateStatus(`У вас последняя версия (${info.current})`, "ok");
+  }
+}
+
+async function installUpdate() {
+  updateBtn.disabled = true;
+  updateLabel.textContent = "Загрузка…";
+  setUpdateStatus("Скачиваю обновление…");
+
+  if (karaokeOn) await stopKaraoke();
+
+  const result = await window.updater.install();
+  if (result.ok) {
+    updateLabel.textContent = "Перезапуск…";
+    setUpdateStatus("Готово. Программа перезапустится с новой версией.", "ok");
+    return;
+  }
+
+  updateBtn.disabled = false;
+  updateLabel.textContent = "Обновить";
+  setUpdateStatus(result.reason || "Не удалось обновить", "error");
+}
+
+if (window.updater) {
+  window.updater.version().then((v) => {
+    appVersionEl.textContent = v;
+  });
+
+  window.updater.onProgress(({ received, total }) => {
+    if (total > 0) {
+      const pct = Math.round((received / total) * 100);
+      updateLabel.textContent = `Загрузка ${pct}%`;
+      setUpdateStatus(`Скачиваю обновление: ${formatMb(received)} / ${formatMb(total)} МБ`);
+    } else {
+      setUpdateStatus(`Скачиваю обновление: ${formatMb(received)} МБ`);
+    }
+  });
+
+  updateBtn.addEventListener("click", () => {
+    if (updateAvailable) installUpdate();
+    else checkUpdates(false);
+  });
+
+  // Тихая проверка при запуске: подсветим кнопку, если есть новая версия.
+  setTimeout(() => checkUpdates(true), 1500);
+} else {
+  updateBtn.hidden = true;
+}

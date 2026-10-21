@@ -1,5 +1,6 @@
 const { app, BrowserWindow, session } = require("electron");
 const path = require("path");
+const { registerUpdater } = require("./updater");
 
 // Меньший аудиобуфер в Chromium (меньше задержка вывода)
 app.commandLine.appendSwitch("audio-buffer-size", "64");
@@ -33,6 +34,7 @@ app.whenReady().then(() => {
     return permission === "media" || permission === "microphone";
   });
 
+  registerUpdater();
   createWindow();
 
   app.on("activate", () => {

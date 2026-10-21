@@ -18,7 +18,11 @@
           <h1>Караоке</h1>
           <p class="subtitle">Слышь свой голос через наушники или колонки</p>
         </div>
+      <button type="button" id="updateBtn" class="btn-update" title="Проверить обновления">
+        <span id="updateLabel">Обновить</span>
+      </button>
       </header>
+      <p id="updateStatus" class="update-status" hidden></p>
 
       <section class="card">
         <label class="field-label" for="micSelect">Микрофон</label>
@@ -81,6 +85,7 @@
       <p class="hint">
         Наденьте наушники, чтобы не было эха. При первом запуске разрешите доступ к микрофону.
       </p>
+      <p class="version">Версия <span id="appVersion">—</span></p>
     </div>
 
     <script src="app.js"></script>

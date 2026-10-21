@@ -1,12 +1,51 @@
 {
   "name": "karaoke-monitor",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Мониторинг микрофона в режиме караоке",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "dist": "electron-builder --win portable",
+    "release": "electron-builder --win portable --publish never"
   },
   "devDependencies": {
-    "electron": "^35.0.0"
+    "electron": "^35.0.0",
+    "electron-builder": "^26.15.3"
+  },
+  "author": "levkastergit",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/levkastergit/karaoke.git"
+  },
+  "build": {
+    "appId": "com.levkastergit.karaoke",
+    "productName": "Karaoke",
+    "artifactName": "Karaoke-${version}.exe",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "updater.js",
+      "src/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "portable": {
+      "artifactName": "Karaoke-${version}.exe"
+    }
   }
 }

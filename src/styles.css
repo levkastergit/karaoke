@@ -285,3 +285,63 @@ input[type="range"] {
   line-height: 1.4;
   padding-left: 28px;
 }
+
+.btn-update {
+  margin-left: auto;
+  flex-shrink: 0;
+  align-self: flex-start;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.btn-update:hover:not(:disabled) {
+  background: var(--border);
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.btn-update:disabled {
+  opacity: 0.5;
+  cursor: progress;
+}
+
+.btn-update.available {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.btn-update.available:hover:not(:disabled) {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.update-status {
+  margin: -18px 0 16px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-align: right;
+}
+
+.update-status.error {
+  color: #f87171;
+}
+
+.update-status.ok {
+  color: var(--on);
+}
+
+.version {
+  text-align: center;
+  font-size: 0.7rem;
+  color: var(--muted);
+  opacity: 0.6;
+  margin-top: 14px;
+}
