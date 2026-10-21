@@ -86,24 +86,25 @@ async function downloadTo(url, dest, onProgress) {
 // Скрипт ждёт завершения приложения, подменяет .exe и запускает новую версию.
 function writeSwapScript(targetExe, newExe) {
   const script = path.join(os.tmpdir(), `karaoke-update-${Date.now()}.cmd`);
+  // timeout /t не работает без консоли (detached-процесс), поэтому пауза через ping.
   const lines = [
     "@echo off",
     "chcp 65001 >nul",
     "set TRIES=0",
     ":wait",
     `move /y "${newExe}" "${targetExe}" >nul 2>&1`,
-    "if errorlevel 1 (",
-    "  set /a TRIES+=1",
-    "  if %TRIES% geq 60 goto fail",
-    "  timeout /t 1 /nobreak >nul",
-    "  goto wait",
-    ")",
+    "if not errorlevel 1 goto done",
+    "set /a TRIES+=1",
+    "if %TRIES% geq 120 goto fail",
+    "ping -n 2 127.0.0.1 >nul",
+    "goto wait",
+    ":done",
     `start "" "${targetExe}"`,
-    'del "%~f0" & exit /b 0',
+    "del \"%~f0\" & exit /b 0",
     ":fail",
     `del "${newExe}" >nul 2>&1`,
     `start "" "${targetExe}"`,
-    'del "%~f0" & exit /b 1',
+    "del \"%~f0\" & exit /b 1",
   ];
   fs.writeFileSync(script, lines.join("\r\n"), "utf8");
   return script;
@@ -174,4 +175,4 @@ function registerUpdater() {
   ipcMain.handle("updater:version", () => app.getVersion());
 }
 
-module.exports = { registerUpdater, checkForUpdates };
+module.exports = { registerUpdater, checkForUpdates, installUpdate, writeSwapScript };
