@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"
+    />
+    <title>Караоке — мониторинг микрофона</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <div class="logo" aria-hidden="true">🎤</div>
+        <div>
+          <h1>Караоке</h1>
+          <p class="subtitle">Слышь свой голос через наушники или колонки</p>
+        </div>
+      </header>
+
+      <section class="card">
+        <label class="field-label" for="micSelect">Микрофон</label>
+        <div class="row">
+          <select id="micSelect" disabled>
+            <option value="">Загрузка устройств…</option>
+          </select>
+          <button type="button" id="refreshBtn" class="btn-icon" title="Обновить список">
+            ↻
+          </button>
+        </div>
+      </section>
+
+      <section class="card">
+        <label class="field-label" for="outSelect">Вывод звука</label>
+        <select id="outSelect" disabled>
+          <option value="">По умолчанию</option>
+        </select>
+      </section>
+
+      <section class="card">
+        <label class="field-label" for="volume">Усиление</label>
+        <input type="range" id="volume" min="0" max="1000" value="150" step="10" />
+        <div class="volume-row">
+          <span>0%</span>
+          <span id="volumeValue">150%</span>
+          <span>1000%</span>
+        </div>
+        <div class="level-meter" aria-hidden="true">
+          <div id="levelBar" class="level-bar"></div>
+        </div>
+        <p class="level-caption">Уровень с микрофона</p>
+      </section>
+
+      <section class="card card-check">
+        <label class="check-row">
+          <input type="checkbox" id="nsToggle" checked />
+          <span>Шумоподавление</span>
+        </label>
+        <p class="check-hint">Мягкое подавление фона. Добавляет ~20–40 мс задержки — отключите, если нужен минимальный лаг.</p>
+      </section>
+
+      <section class="card card-check">
+        <label class="check-row">
+          <input type="checkbox" id="agcToggle" />
+          <span>Автоусиление микрофона (AGC)</span>
+        </label>
+        <p class="check-hint">Делает голос громче, но добавляет задержку — включайте только если тихо.</p>
+      </section>
+
+      <!-- Chrome/Electron: без muted audio Web Audio почти не получает сигнал с микрофона -->
+      <audio id="keepAlive" muted playsinline hidden></audio>
+
+      <button type="button" id="karaokeBtn" class="karaoke-btn off" disabled>
+        <span class="btn-dot"></span>
+        <span id="karaokeLabel">Включить караоке</span>
+      </button>
+
+      <p id="status" class="status">Запрос доступа к микрофону…</p>
+      <p class="hint">
+        Наденьте наушники, чтобы не было эха. При первом запуске разрешите доступ к микрофону.
+      </p>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

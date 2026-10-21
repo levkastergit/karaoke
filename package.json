@@ -1,0 +1,12 @@
+{
+  "name": "karaoke-monitor",
+  "version": "1.0.0",
+  "description": "Мониторинг микрофона в режиме караоке",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^35.0.0"
+  }
+}
